@@ -1,0 +1,7 @@
+## Interface: 11509
+## Title: Forever Launch Guide (Era Rehearsal)
+## Notes: Original Night Elf exploration fallback rehearsal. Independent review candidate; requires RXPGuides.
+## Author: GPT Launch Prep
+## Version: 0.1.0-era.1
+## Dependencies: RXPGuides
+Guide.lua

@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/RestedXP/RXPGuides",
+  "commit": "9536b5a9ee7e55745618a57dad43df2c4312ea16",
+  "date": "2026-10-22",
+  "source": "Existing Character Planner primary upstream checkout; no installed client execution.",
+  "whole_file_sha256": {
+    "GuideLoader.lua": "5b90faa702643687f040348b28f9ea41ba145809be33444dd93d10cc83449796",
+    "functions.lua": "c5f5b0b605d7bd0194fc10348db837af28a89ac21140eab19132f44fb3464dcb",
+    "LICENSE": "cb6fc99e7c3c66807b71c8ec52b94a8bca3806e60e27405007624e9d4929e5bd"
+  },
+  "excerpts_sha256": "dee5c47d5cb6f986848da10ba0c6b3f86bbcacc74199ab2216442e0d8db01c7f",
+  "limitation": "Emulated parse-time logic with map/WoW API adapters. Not installed v4.11.27 verification and not native WoW."
+}
