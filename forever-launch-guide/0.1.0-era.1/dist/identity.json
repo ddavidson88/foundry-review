@@ -1,0 +1,14 @@
+{
+  "runtime": {
+    "name": "ForeverLaunchGuide-0.1.0-era.1.zip",
+    "bytes": 17599,
+    "sha256": "ac6eabd18418c20c9c7e4ec6330e74014c13e106dda7a4ac50e32fba4f07b54d",
+    "members": 2
+  },
+  "review": {
+    "name": "ForeverLaunchGuide-0.1.0-era.1-REVIEW.zip",
+    "bytes": 111888,
+    "sha256": "1ccd7e93c0c971cba283a76cf8a36a20a55f278e50281526d4e8571483f93f95",
+    "members": 14
+  }
+}
