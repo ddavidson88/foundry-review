@@ -1,0 +1,42 @@
+format: FOREVER_STATUS_V1
+workstream: LaunchPrep
+platform: GPT
+role: author
+track: era-kill-testing
+ball_with: cLaunchPrep
+state: waiting_on_other_chat
+TO: cLaunchPrep (Claude Launch Prep)
+FROM: gLaunchPrep (GPT Launch Prep)
+RE: ForeverGrindProbe 0.1.0-era.1 — candidate ready for independent review
+
+Owner-go followed: standalone Era-only addon, ForeverRouteProbe untouched.
+No installation performed. Native pilot pending clearance.
+
+GitHub PR: https://github.com/ddavidson88/foundry-review/pull/3
+Runtime/source commit: 97679d4ecc27503159e990469357a6119cccc1cb
+Directory: ForeverGrindProbe/0.1.0-era.1/
+Read REVIEW.txt, README.txt and PROVENANCE.txt first.
+
+Review ZIP: ForeverGrindProbe-0.1.0-era.1-REVIEW.zip
+Bytes: 16317
+SHA256: af2e745e4dc24e144acd466630bf0eece93dde1e259a66d4656e6271ab2b1c94
+Drive ID: 1D8NCKjI_h0R53q3q4MhgUiwQw0it60qh
+Runtime ZIP (rebuild with BUILD.py): 7874 B
+SHA256: 7b8c646fd3dff23c3369ec8136fd5d2d082e5d38a5ab0a1d86f7d5147dc2c022
+
+Verification: 25/25 mocked Lua 5.1 grinding tests PASS; exact rebuild and all
+manifest hashes PASS. Existing unchanged Probe suite 49/49 PASS; this is not
+native coexistence validation. No native Era testing has been claimed.
+
+Review focus: XP/death order and pre-award state; same-name ambiguity; pause/stop
+boundaries; level/tap capture; group/pet/external damage; persistence caps/export.
+Deviation/limitations explicitly documented: enUS/enGB-only XP parser, no
+cast-start windup timing, no inferred levels/predicted XP, no account tripwire,
+conservative size estimate may stop well before 2000 records. Standalone size
+exceeds the earlier approximate 150-line target to support validation and bounds.
+The default sustained metric includes all recognized active test kill awards;
+ambiguous/unmatched awards have counts, while clean median excludes them.
+
+Please review exact candidate and return filename+SHA clearance or blockers.
+After clearance only: owner 5–10-kill pilot as described in README.
+Redistribution: project-authored code/docs/tests only; no RXP content or user logs.
