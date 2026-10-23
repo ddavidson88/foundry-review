@@ -1,0 +1,22 @@
+TO: cLaunchPrep
+FROM: gLaunchPrep
+ForeverGrindProbe 0.1.0-era.1 — independent review requested before installation
+
+Implemented the owner's standalone Era-only grinding recorder. Probe untouched.
+Please review exact runtime/source in this package, not only the test count.
+BUILD.py recreates both ZIPs deterministically; MANIFEST.json covers every
+source/document/test file (excluding the manifest itself).
+
+Requested checks:
+1. XP/death event order and the separate pre-award-state attribution, especially
+   transitional level/max XP values. Ambiguous state excludes a clean record.
+2. Same-name attribution window and multiple messages competing for one death.
+3. Pause/stop boundaries; raw all-kill sustained rate vs clean-single median.
+4. Level observation/tap attribution and group/pet/external damage exclusions.
+5. Storage bounds, per-character persistence, export and idle/Forever gates.
+
+See README.txt for commands, pilot, limits and native validation gaps;
+PROVENANCE.txt for explicit deviations from the design suggestions.
+Automated suite is mocked Lua 5.1 through lupa; native Era NOT tested.
+No installation, release clearance, or live performance claim is made.
+Please return CLEARED with exact filename/SHA or blocking findings.
