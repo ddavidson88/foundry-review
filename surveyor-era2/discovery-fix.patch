@@ -1,0 +1,237 @@
+--- a/Surveyor/Core.lua
++++ b/Surveyor/Core.lua
+@@ -2,6 +2,7 @@
+ local Surveyor = LibStub("AceAddon-3.0"):NewAddon("Surveyor", "AceConsole-3.0")
+ 
+ local defaults = {
++	char = { explored = {} },
+ 	profile = {
+ 		enabled = true,
+ 		mode = "xp", -- "xp": areas with ExplorationLevel > 0; "all": every area with a bit
+@@ -39,6 +40,7 @@
+ function Surveyor:OnInitialize()
+ 	self.db = LibStub("AceDB-3.0"):New("SurveyorEraDB", defaults, true)
+ 	ns.Settings = self.db.profile
++	ns.Explored = self.db.char.explored
+ 	ns.Print = function(msg)
+ 		self:Print(msg)
+ 	end
+@@ -48,6 +50,7 @@
+ 
+ function Surveyor:OnEnable()
+ 	self.mapReady = ns.Map.Init()
++	ns.Discovery.Start()
+ 	if ns.EraCompat then
+ 		ns.EraCompat.Start(self)
+ 	end
+--- a/Surveyor/Discovery.lua
++++ b/Surveyor/Discovery.lua
+@@ -0,0 +1,88 @@
++-- Era discovery evidence: exact client messages, saved independently per character.
++local _, ns = ...
++local Discovery = {}
++ns.Discovery = Discovery
++
++-- Compile the client's localized format, including positional %1$s / %2$d.
++local function compile(fmt)
++    if type(fmt) ~= "string" then return end
++    local out, nameCapture, captures, i = { "^" }, nil, 0, 1
++    while i <= #fmt do
++        local ch = fmt:sub(i, i)
++        if ch == "%" then
++            local tail = fmt:sub(i)
++            local token, kind = tail:match("^(%%[12]%$([sd]))")
++            if not token then token, kind = tail:match("^(%%([sd]))") end
++            if token then
++                captures = captures + 1
++                if kind == "s" then
++                    if nameCapture then return end
++                    nameCapture = captures
++                    out[#out + 1] = "(.+)"
++                else
++                    out[#out + 1] = "(%d+)"
++                end
++                i = i + #token
++            elseif tail:sub(1, 2) == "%%" then
++                out[#out + 1] = "%%"
++                i = i + 2
++            else
++                return -- Unsupported format: fail closed.
++            end
++        else
++            out[#out + 1] = ch:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
++            i = i + 1
++        end
++    end
++    out[#out + 1] = "$"
++    if nameCapture then return table.concat(out), nameCapture end
++end
++
++function Discovery.NameFromMessage(message)
++    if type(message) ~= "string" then return end
++    for _, key in ipairs({ "ERR_ZONE_EXPLORED_XP", "ERR_ZONE_EXPLORED" }) do
++        local pattern, index = compile(_G[key])
++        if pattern then
++            local matches = { message:match(pattern) }
++            if matches[index] then return matches[index] end
++        end
++    end
++end
++
++function Discovery.RecordMessage(message)
++    local name = Discovery.NameFromMessage(message)
++    if not name or not ns.Explored then return false end
++    local mapID = C_Map and C_Map.GetBestMapForUnit and C_Map.GetBestMapForUnit("player")
++    local assigned = ns.MapAreas and ns.MapAreas[mapID]
++    -- Require a known current zone; never mark every same-named area worldwide.
++    if not assigned then return false end
++    local root = ns.Grid.RootOf(ns.Areas, assigned) or assigned
++    local candidate
++    for id, row in pairs(ns.Areas or {}) do
++        if (ns.Grid.RootOf(ns.Areas, id) or id) == root then
++            local localized = C_Map.GetAreaInfo and C_Map.GetAreaInfo(id)
++            local areaName = localized or ((not GetLocale or GetLocale() == "enUS" or GetLocale() == "enGB") and row[1])
++            if areaName == name then
++                if candidate then return false end -- Ambiguous name within this zone.
++                candidate = id
++            end
++        end
++    end
++    if not candidate or ns.Explored[candidate] then return false end
++    ns.Explored[candidate] = true
++    if ns.Map then ns.Map.Invalidate() end
++    return true
++end
++
++function Discovery.Start()
++    if Discovery.frame then return end
++    local frame = CreateFrame("Frame")
++    Discovery.frame = frame
++    frame:RegisterEvent("CHAT_MSG_SYSTEM")
++    frame:RegisterEvent("UI_INFO_MESSAGE")
++    frame:SetScript("OnEvent", function(_, event, first, second)
++        local message = first
++        if event == "UI_INFO_MESSAGE" and type(first) ~= "string" then message = second end
++        Discovery.RecordMessage(message)
++    end)
++end
+--- a/Surveyor/EraCompat.lua
++++ b/Surveyor/EraCompat.lua
+@@ -8,7 +8,7 @@
+     local version, build, _, interface = "unknown", "unknown", nil, "unknown"
+     if GetBuildInfo then version, build, _, interface = GetBuildInfo() end
+     local out = {
+-        "Era test 0.1.0-era.1; client " .. tostring(version) .. "/" .. tostring(build) .. "; interface " .. tostring(interface),
++        "Era test 0.1.0-era.2; client " .. tostring(version) .. "/" .. tostring(build) .. "; interface " .. tostring(interface),
+         "Boundary/overlay data: Forever " .. tostring(ns.DataBuild) .. " (not regenerated for Era).",
+     }
+     local checks = {
+--- a/Surveyor/Map.lua
++++ b/Surveyor/Map.lua
+@@ -211,29 +211,33 @@
+ local function refreshExplored(m)
+ 	m.exploredAt = exploredRev
+ 	m.useSet = false
++	m.set = {}
+ 	local index = overlayIndex(m.id)
+ 	if index then
+ 		m.set = m.set or {}
+-		m.useSet = fillExplored(m.id, index, m.set) ~= nil
++		local count, matched = fillExplored(m.id, index, m.set)
++		-- Unmatched textures are unknown, not evidence of unexplored areas.
++		m.useSet = count ~= nil and count == matched
+ 	end
+ end
+ 
+ local function isExplored(m, id, nx, ny)
+-	if m.useSet then
+-		return m.set[id] == true
+-	end
++	if ns.Explored and ns.Explored[id] then return true end
++	if m.set and m.set[id] then return true end
++	if m.useSet then return false end
+ 	-- Fallback: the client's ids at the area's interior point. It answers only
+ 	-- inside an overlay's hit rectangle, so it misses many explored areas.
+ 	local api = C_MapExplorationInfo and C_MapExplorationInfo.GetExploredAreaIDsAtPosition
+ 	if not api or not inside(nx, ny) then
+ 		return false
+ 	end
+-	local found = api(m.id, CreateVector2D(nx, ny))
+-	if type(found) ~= "table" then
++	local ok, found = pcall(api, m.id, CreateVector2D(nx, ny))
++	if not ok or type(found) ~= "table" then
+ 		return false
+ 	end
+ 	for i = 1, #found do
+ 		if found[i] == id then
++			if ns.Explored then ns.Explored[id] = true end
+ 			return true
+ 		end
+ 	end
+@@ -592,19 +596,21 @@
+ 				add("data area %d in the explored set: %s", hits[i], set[hits[i]] and "yes" or "no")
+ 			end
+ 		end
+-		-- The position API answers only inside an overlay's hit rectangle (in game,
+-		-- 2026-10-20) and is not consulted on a map with baked overlays; its lines
+-		-- would only mislead here.
+-		add("position API not used on this map; the overlays decide")
+-		return out
++	end
++	add("discovery mode: %s", m and m.useSet and "matched overlays + recorded discoveries" or "partial/unmatched overlays + position fallback + recorded discoveries")
++	for _, id in ipairs(hits) do
++		add("area %d recorded discovery: %s", id, ns.Explored and ns.Explored[id] and "yes" or "no")
++		if m and m.source[id] then
++			add("area %d layer verdict: %s", id, isExplored(m, id, probe(m, id, m.source[id])) and "explored" or "unexplored/unknown")
++		end
+ 	end
+ 	local api = C_MapExplorationInfo and C_MapExplorationInfo.GetExploredAreaIDsAtPosition
+ 	if not api then
+ 		add("C_MapExplorationInfo.GetExploredAreaIDsAtPosition missing")
+ 		return out
+ 	end
+-	local found = api(mapID, pos)
+-	if type(found) ~= "table" then
++	local ok, found = pcall(api, mapID, pos)
++	if not ok or type(found) ~= "table" then
+ 		add("explored ids at player: %s", tostring(found))
+ 		return out
+ 	end
+--- a/Surveyor/Surveyor.toc
++++ b/Surveyor/Surveyor.toc
+@@ -2,7 +2,7 @@
+ ## Title: Surveyor (Era Test)
+ ## Notes: Outlines the areas that give discovery experience on the world map. /survey
+ ## Author: Geraldlol
+-## Version: 0.1.0-era.1
++## Version: 0.1.0-era.2
+ ## SavedVariables: SurveyorEraDB
+ ## X-License: GPL-3.0-or-later
+ ## IconTexture: Interface\AddOns\Surveyor\Media\icon
+@@ -15,6 +15,7 @@
+ Data/MapAreas.lua
+ Grid.lua
+ EraCompat.lua
++Discovery.lua
+ Core.lua
+ Options.lua
+ Map.lua
+--- a/Surveyor/Surveyor_Vanilla.toc
++++ b/Surveyor/Surveyor_Vanilla.toc
+@@ -2,7 +2,7 @@
+ ## Title: Surveyor (Era Test)
+ ## Notes: Outlines the areas that give discovery experience on the world map. /survey
+ ## Author: Geraldlol
+-## Version: 0.1.0-era.1
++## Version: 0.1.0-era.2
+ ## SavedVariables: SurveyorEraDB
+ ## X-License: GPL-3.0-or-later
+ ## IconTexture: Interface\AddOns\Surveyor\Media\icon
+@@ -15,6 +15,7 @@
+ Data/MapAreas.lua
+ Grid.lua
+ EraCompat.lua
++Discovery.lua
+ Core.lua
+ Options.lua
+ Map.lua
