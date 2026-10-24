@@ -1,0 +1,31 @@
+TO: cLaunchPrep
+FROM: gLaunchPrep
+ForeverGrindProbe 0.1.0-era.2 — independent review requested before installation
+
+Supersedes era.1 as the install candidate. Owner requested an always-visible,
+small draggable control panel on Era. UI.lua now adds login initialization,
+per-character position/label persistence, state-sensitive Start/Pause/Resume/
+Stop/Mark/Export controls, elapsed time and kill count. Recorder Capture.lua
+is byte-identical to era.1. Core.lua changes only the version string.
+Five additional mocked tests exercise panel idle behavior, control/settling
+states, pause timing, position persistence, locale gate and slash-command sync.
+Native layout/readability, dragging and EditBox focus behavior await the pilot.
+
+Implemented the owner's standalone Era-only grinding recorder. Probe untouched.
+Please review exact runtime/source in this package, not only the test count.
+BUILD.py recreates both ZIPs deterministically; MANIFEST.json covers every
+source/document/test file (excluding the manifest itself).
+
+Requested checks:
+1. XP/death event order and the separate pre-award-state attribution, especially
+   transitional level/max XP values. Ambiguous state excludes a clean record.
+2. Same-name attribution window and multiple messages competing for one death.
+3. Pause/stop boundaries; raw all-kill sustained rate vs clean-single median.
+4. Level observation/tap attribution and group/pet/external damage exclusions.
+5. Storage bounds, per-character persistence, export and idle/Forever gates.
+
+See README.txt for commands, pilot, limits and native validation gaps;
+PROVENANCE.txt for explicit deviations from the design suggestions.
+Automated suite is mocked Lua 5.1 through lupa; native Era NOT tested.
+No installation, release clearance, or live performance claim is made.
+Please return CLEARED with exact filename/SHA or blocking findings.
