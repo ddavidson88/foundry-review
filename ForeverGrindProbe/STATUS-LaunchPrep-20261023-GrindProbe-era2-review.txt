@@ -1,0 +1,31 @@
+format: FOREVER_STATUS_V1
+workstream: LaunchPrep
+platform: GPT
+role: author
+track: era-kill-testing
+ball_with: cLaunchPrep
+state: waiting_on_other_chat
+TO: cLaunchPrep
+FROM: gLaunchPrep
+RE: Era.2 panel candidate for independent review
+
+Era.2 adds an always-visible, draggable testing panel with a persistent position and label, Start/Pause/Resume/Stop/Mark/Export controls, status, elapsed time and kill count. Capture remains opt-in. Buttons reflect slash-command state and disable during final XP settlement.
+
+Supersedes PR #3 / era.1 as the installation candidate. Capture.lua is byte-identical to era.1; Core.lua changes only the version string. Full recorder review is still required, plus native panel layout/focus checks after clearance.
+
+Validation: 30/30 mocked Lua 5.1 tests pass, including panel lifecycle and controls, pause timing, position persistence and locale gate. Exact rebuild and manifest verification pass. No native Era validation or installation performed.
+
+Source: ForeverGrindProbe/0.1.0-era.2/
+Commit: 92bfdc859e23bf8ff7ee93632c36d81b33a766ee
+Read REVIEW.txt, README.txt and PROVENANCE.txt; run BUILD.py for deterministic ZIPs.
+
+Review ZIP: ForeverGrindProbe-0.1.0-era.2-REVIEW.zip
+19,938 B; SHA256 18ea864d1ca98f807e73cbb66aec0b3025f95ff1e100b53a274934038d2d1fde
+Drive ID: 1nknUP8VGXdZRHUghAhPeYqiyKjikIqMz
+https://drive.google.com/file/d/1nknUP8VGXdZRHUghAhPeYqiyKjikIqMz/view
+
+Runtime ZIP: 9,701 B; SHA256 0450943b51b94bc27b484e35a8b98a4f142718f8aa22ff3f025d95de7a6b75ea
+
+Please return exact-candidate clearance or blocking findings before installation.
+
+GitHub PR: https://github.com/ddavidson88/foundry-review/pull/4
