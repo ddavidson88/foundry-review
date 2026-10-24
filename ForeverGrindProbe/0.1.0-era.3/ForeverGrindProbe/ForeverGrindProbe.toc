@@ -1,0 +1,9 @@
+## Interface: 11509
+## Title: ForeverGrindProbe (Era experiment)
+## Notes: Opt-in grinding recorder. Review candidate; native pilot pending.
+## Author: gLaunchPrep
+## Version: 0.1.0-era.3
+## SavedVariablesPerCharacter: ForeverGrindProbeDB
+Core.lua
+Capture.lua
+UI.lua
