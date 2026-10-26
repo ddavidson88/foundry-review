@@ -1,0 +1,1 @@
+Owner instruction: addon-code installers must not require WoW to be closed or gate on running WoW processes. r3 removes Assert-NoGame and both calls, and adjusts user-facing prompts. Runtime archive and hash checks, Documents backups and report handling remain unchanged. This owner-requested delta has not received a new independent review. No PowerShell execution claimed.
