@@ -1,0 +1,25 @@
+ForeverGrindProbe 0.1.0-era.11 — R1 delta review; NOT INSTALLED
+Review addressed: 1Npqr3APsfNqsztM0cHT4jctIwfvb4fiQ.
+Base era10 REVIEW SHA256 577331061a28527edcd0840ee5590a5e6cb47d87ee666f8efda07a1aa4af3c39.
+
+R1: G.engage returns existing record when t_death is set, even if closed.
+Existing combat/telemetry closed-record guards then discard late damage/cast
+without mutation or new reservation. Closed NON-DEAD GUIDs still open a new
+record. Diagnostic closed_guid_reengagement now excludes terminal death cases.
+
+Reproduced before fix: late hit/DoT/cast test created2 records instead of1.
+After fix tests show1, killed record unchanged, byte estimate unchanged, no
+phantom timeout later. Explicit timeout/re-pull test confirms second record
+with25 outgoing damage and old record unchanged. Prior combat-end re-pull/XP
+regression remains passing. 79 emulated Lua5.1 tests pass.
+
+Nonblocking: cosmetic empty Core.stop line removed. Same GUID re-pulled inside
+one episode intentionally does not set multi: guids counts distinct mobs,
+record_ids identifies separate engagements. New test verifies2 record_ids,
+1 guid,multi=false. Different GUIDs still set multi as before.
+
+No DB schema/record_schema changes. No new owner test or installation. Native
+late-event ordering and combat-log/collector checks remain unverified. No claim
+of native acceptance. Publish exact artifacts and request Claude delta review.
+b7fb770431c4ca3bdc4aae46cbd86bb5e0773f6bbf2126c322bddbe8b85da23b  grind/dist/ForeverGrindProbe-0.1.0-era.11-REVIEW.zip
+6ad75fd72a20597b156730ae2c24b08af58da78acfc0a32bfeb2ffc31a8b2217  grind/dist/ForeverGrindProbe-0.1.0-era.11-RUNTIME.zip
