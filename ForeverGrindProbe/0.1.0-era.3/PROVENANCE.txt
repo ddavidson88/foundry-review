@@ -1,0 +1,20 @@
+Project-authored by gLaunchPrep for Dustin, 2026-10-23.
+era.2 adds the owner-requested always-visible Era testing control panel.
+era.3 fixes reviewer B1 using the exact Era scout message (Young Wolf, total 45,
+rested +1), plus the N2 wording correction and N4 testing guidance.
+Specification: cLaunchPrep owner-go Drive 1jwiDWb1Q-hgP0-stSg35lipfUdi_sMP6.
+Detailed design: Drive 1YGb1TMZfMIXlxuBoRSZ6pPH8bxORVgi7 Q2–Q4; its earlier
+no-build/module advice is superseded by the standalone owner-go instruction.
+
+Core.lua validXP/delta and JSON quoting conventions adapted from project-owned
+ForeverRouteProbe 0.1.0-beta.3 Core.lua. Probe's complete observeXP state machine
+is NOT copied: this candidate uses debounced, uniquely matched XP transitions.
+No Probe source is modified. No dependency on Probe, Foundry, MobInfo2, KillTrack
+or advanced combat-log files. No third-party implementation copied.
+
+Design deviations for review: standalone /grind, English-only parser, no
+predicted-XP field, no spell-cast-start attribution (CLEU action timing is
+explicit), no inferred levels, conservative storage estimate, no independent
+account tripwire. Runtime exceeds the feedback's rough 150-line estimate:
+ambiguity handling, persistence bounds, UI and tests were favored over a line
+target. Pilot pending; all automated results are EMULATED.

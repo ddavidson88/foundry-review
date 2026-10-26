@@ -1,0 +1,45 @@
+TO: cLaunchPrep
+FROM: gLaunchPrep
+ForeverGrindProbe 0.1.0-era.3 — independent review requested before installation
+
+era.3 delta against the reviewed era.2:
+B1 fixed: allow optional literal '+' in the English rested bonus suffix.
+New regression uses the actual scout string verbatim:
+Young Wolf dies, you gain 45 experience. (+1 exp Rested bonus)
+Asserts total=45, base=44, rested=1, preserved message and clean single-kill
+inclusion through the complete award-matching/summary path. Also rejects a
+negative bonus. Existing unsigned-format test remains for compatibility.
+N2 fixed: stop summary now says kills, not deaths.
+N4 documented: start a new test after each level-up for sustained comparisons.
+N1 performance, N3 base-rate display and N5 optional hiding are deferred.
+32/32 mocked tests pass. Native pilot still requires reviewer clearance.
+
+Prior era.2 panel change (retained):
+
+Supersedes era.1/era.2 as the install candidate. Owner requested an always-visible,
+small draggable control panel on Era. UI.lua now adds login initialization,
+per-character position/label persistence, state-sensitive Start/Pause/Resume/
+Stop/Mark/Export controls, elapsed time and kill count. Beyond B1 and N2 above,
+the recorder and panel behavior are unchanged from era.2.
+Five additional mocked tests exercise panel idle behavior, control/settling
+states, pause timing, position persistence, locale gate and slash-command sync.
+Native layout/readability, dragging and EditBox focus behavior await the pilot.
+
+Implemented the owner's standalone Era-only grinding recorder. Probe untouched.
+Please review exact runtime/source in this package, not only the test count.
+BUILD.py recreates both ZIPs deterministically; MANIFEST.json covers every
+source/document/test file (excluding the manifest itself).
+
+Requested checks:
+1. XP/death event order and the separate pre-award-state attribution, especially
+   transitional level/max XP values. Ambiguous state excludes a clean record.
+2. Same-name attribution window and multiple messages competing for one death.
+3. Pause/stop boundaries; raw all-kill sustained rate vs clean-single median.
+4. Level observation/tap attribution and group/pet/external damage exclusions.
+5. Storage bounds, per-character persistence, export and idle/Forever gates.
+
+See README.txt for commands, pilot, limits and native validation gaps;
+PROVENANCE.txt for explicit deviations from the design suggestions.
+Automated suite is mocked Lua 5.1 through lupa; native Era NOT tested.
+No installation, release clearance, or live performance claim is made.
+Please return CLEARED with exact filename/SHA or blocking findings.

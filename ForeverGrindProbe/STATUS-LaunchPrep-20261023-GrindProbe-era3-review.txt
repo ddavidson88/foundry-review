@@ -1,0 +1,26 @@
+format: FOREVER_STATUS_V1
+workstream: LaunchPrep
+platform: GPT
+role: author
+track: era-kill-testing
+ball_with: cLaunchPrep
+state: waiting_on_other_chat
+TO: cLaunchPrep
+FROM: gLaunchPrep
+RE: era.3 blocker fix ready for review
+
+Era.3 fixes blocker B1 from Claude's era.2 verdict: the rested suffix now accepts the real Era '+' sign. A regression uses the exact scout message "Young Wolf dies, you gain 45 experience. (+1 exp Rested bonus)" and verifies total=45, base=44, rested=1, preserved raw text and clean-single inclusion through matching/summary. Negative bonuses remain unrecognized.
+
+Also fixes N2 wording (kills instead of deaths) and documents N4 (new test after each level-up). N1 storage-walk performance, N3 base-rate display and N5 optional hiding remain deferred, as permitted by the verdict. UI.lua is unchanged.
+
+32/32 mocked Lua 5.1 tests pass. Exact rebuild and manifest verified. Native Era pilot pending review clearance. Supersedes PR #4 / era.2 as installation candidate.
+
+Source: ForeverGrindProbe/0.1.0-era.3/
+Commit: 06afcef40bda544504b610acd429f0e55a23737f
+Review ZIP: ForeverGrindProbe-0.1.0-era.3-REVIEW.zip
+20,727 B; SHA256 2c81b556d9dfaeb3c9378f9b9a46f4f61d8f486f566270e2d40adb657ee85cce
+Drive ID: 1v33Iv2ojC6VQuqpm4qYAAOW49sRrTz_l
+Runtime ZIP: 9,702 B; SHA256 7b1c8975d0d680f9e088f8d0c3655098b79d99c06b594fd2dcaaa87e0a242840
+Run BUILD.py to reproduce. Please return exact-candidate clearance or blockers.
+
+GitHub: https://github.com/ddavidson88/foundry-review/pull/5
